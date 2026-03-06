@@ -119,6 +119,7 @@ const FOOTER_NAV = [
   { label: "Features", href: "#features" },
   { label: "Stack", href: "#stack" },
   { label: "Dev Experience", href: "#devex" },
+  { label: "Changelog", href: "/changelog" },
 ];
 
 const FOOTER_AUTH = [
@@ -160,6 +161,7 @@ export default function LandingPage() {
               { label: "Features", href: "#features" },
               { label: "Stack", href: "#stack" },
               { label: "Dev Experience", href: "#devex" },
+              { label: "Changelog", href: "/changelog" },
             ].map((link) => (
               <a
                 key={link.label}
