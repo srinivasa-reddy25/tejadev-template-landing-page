@@ -1,7 +1,6 @@
-'use client'
+"use client";
 
-import { useEffect, useState } from 'react'
-import Link from 'next/link'
+import { useEffect, useState } from "react";
 
 import {
   Code2,
@@ -9,135 +8,135 @@ import {
   Layers,
   LayoutGrid,
   ShieldCheck,
-  Wrench
-} from 'lucide-react'
+  Wrench,
+} from "lucide-react";
 
 import {
   AnimatedSpan,
   Terminal,
-  TypingAnimation
-} from '@/components/ui/terminal'
+  TypingAnimation,
+} from "@/components/ui/terminal";
+import { appUrl } from "@/constants/env";
 
 // ─── Data ────────────────────────────────────────────────────────────────────
 
 const MARQUEE_ITEMS = [
-  'TURBOREPO',
-  'NEXT.JS 16',
-  'EXPRESS',
-  'FIREBASE',
-  'MONGODB',
-  'TYPESCRIPT',
-  'SHADCN/UI',
-  'TAILWIND',
-  'BUN',
-  'MONGOOSE',
-  'TANSTACK QUERY',
-  'ZOD',
-  'RADIX UI',
-  'AXIOM'
-]
+  "TURBOREPO",
+  "NEXT.JS 16",
+  "EXPRESS",
+  "FIREBASE",
+  "MONGODB",
+  "TYPESCRIPT",
+  "SHADCN/UI",
+  "TAILWIND",
+  "BUN",
+  "MONGOOSE",
+  "TANSTACK QUERY",
+  "ZOD",
+  "RADIX UI",
+  "AXIOM",
+];
 
 const BENTO_SMALL_CARDS = [
   {
-    id: 'auth',
-    label: 'Auth Ready',
+    id: "auth",
+    label: "Auth Ready",
     description:
-      'Firebase with email/password + Google OAuth. Email verification, protected routes, and server-side token validation — already wired.',
+      "Firebase with email/password + Google OAuth. Email verification, protected routes, and server-side token validation — already wired.",
     icon: ShieldCheck,
-    accent: 'primary' as const
+    accent: "primary" as const,
   },
   {
-    id: 'typescript',
-    label: 'Type-Safe Stack',
+    id: "typescript",
+    label: "Type-Safe Stack",
     description:
-      'End-to-end TypeScript across every app and package. Strict mode, shared tsconfig presets, and zero implicit any.',
+      "End-to-end TypeScript across every app and package. Strict mode, shared tsconfig presets, and zero implicit any.",
     icon: Code2,
-    accent: 'accent' as const
+    accent: "accent" as const,
   },
   {
-    id: 'database',
-    label: 'Database Ready',
+    id: "database",
+    label: "Database Ready",
     description:
-      'MongoDB + Mongoose with a shared model registry via the db package. Connect and define schemas — no boilerplate.',
+      "MongoDB + Mongoose with a shared model registry via the db package. Connect and define schemas — no boilerplate.",
     icon: Database,
-    accent: 'primary' as const
+    accent: "primary" as const,
   },
   {
-    id: 'ui',
-    label: 'UI Components',
+    id: "ui",
+    label: "UI Components",
     description:
-      'shadcn/ui with Radix UI primitives, custom theme tokens, Osiris font, light/dark mode — ready to extend.',
+      "shadcn/ui with Radix UI primitives, custom theme tokens, Osiris font, light/dark mode — ready to extend.",
     icon: LayoutGrid,
-    accent: 'accent' as const
+    accent: "accent" as const,
   },
   {
-    id: 'tooling',
-    label: 'Dev Tooling',
+    id: "tooling",
+    label: "Dev Tooling",
     description:
-      'ESLint, Prettier, Commitlint, Husky, lint-staged, and a GitHub Actions CI — all pre-configured, none to think about.',
+      "ESLint, Prettier, Commitlint, Husky, lint-staged, and a GitHub Actions CI — all pre-configured, none to think about.",
     icon: Wrench,
-    accent: 'muted' as const
-  }
-]
+    accent: "muted" as const,
+  },
+];
 
 const ACCENT_CLASSES = {
   primary: {
-    icon: 'bg-primary/10 text-primary group-hover:bg-primary/20',
-    hover: 'hover:border-primary/50'
+    icon: "bg-primary/10 text-primary group-hover:bg-primary/20",
+    hover: "hover:border-primary/50",
   },
   accent: {
-    icon: 'bg-accent/10 text-accent group-hover:bg-accent/20',
-    hover: 'hover:border-accent/40'
+    icon: "bg-accent/10 text-accent group-hover:bg-accent/20",
+    hover: "hover:border-accent/40",
   },
   muted: {
-    icon: 'bg-muted text-muted-foreground group-hover:bg-muted/60',
-    hover: 'hover:border-muted-foreground/40'
-  }
-}
+    icon: "bg-muted text-muted-foreground group-hover:bg-muted/60",
+    hover: "hover:border-muted-foreground/40",
+  },
+};
 
 const STACK_ROW_ONE = [
-  { name: 'Turborepo', desc: 'Monorepo orchestration' },
-  { name: 'Next.js 16', desc: 'React framework' },
-  { name: 'Express', desc: 'Node API server' },
-  { name: 'Bun', desc: 'Fast runtime & package manager' },
-  { name: 'TypeScript', desc: 'Type-safe development' },
-  { name: 'Firebase', desc: 'Auth & identity' }
-]
+  { name: "Turborepo", desc: "Monorepo orchestration" },
+  { name: "Next.js 16", desc: "React framework" },
+  { name: "Express", desc: "Node API server" },
+  { name: "Bun", desc: "Fast runtime & package manager" },
+  { name: "TypeScript", desc: "Type-safe development" },
+  { name: "Firebase", desc: "Auth & identity" },
+];
 
 const STACK_ROW_TWO = [
-  { name: 'MongoDB', desc: 'Document database' },
-  { name: 'Mongoose', desc: 'ODM + model registry' },
-  { name: 'TanStack Query', desc: 'Server state management' },
-  { name: 'shadcn/ui', desc: 'Component library' },
-  { name: 'Tailwind CSS', desc: 'Utility-first styling' },
-  { name: 'Radix UI', desc: 'Accessible primitives' },
-  { name: 'Axiom', desc: 'Structured logging' },
-  { name: 'Zod', desc: 'Schema validation' }
-]
+  { name: "MongoDB", desc: "Document database" },
+  { name: "Mongoose", desc: "ODM + model registry" },
+  { name: "TanStack Query", desc: "Server state management" },
+  { name: "shadcn/ui", desc: "Component library" },
+  { name: "Tailwind CSS", desc: "Utility-first styling" },
+  { name: "Radix UI", desc: "Accessible primitives" },
+  { name: "Axiom", desc: "Structured logging" },
+  { name: "Zod", desc: "Schema validation" },
+];
 
 const FOOTER_NAV = [
-  { label: 'Features', href: '#features' },
-  { label: 'Stack', href: '#stack' },
-  { label: 'Dev Experience', href: '#devex' }
-]
+  { label: "Features", href: "#features" },
+  { label: "Stack", href: "#stack" },
+  { label: "Dev Experience", href: "#devex" },
+];
 
-// Update these hrefs to point to your deployed app or GitHub repo
 const FOOTER_AUTH = [
-  { label: 'Sign In', href: '/login' },
-  { label: 'Sign Up', href: '/signup' },
-  { label: 'Forgot Password', href: '/forgot-password' }
-]
+  { label: "Sign In", href: appUrl("/login") },
+  { label: "Sign Up", href: appUrl("/signup") },
+  { label: "Forgot Password", href: appUrl("/forgot-password") },
+];
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function LandingPage() {
-  const [scrolled, setScrolled] = useState(false)
+  const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 20)
-    window.addEventListener('scroll', handleScroll)
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
+    const handleScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -145,8 +144,8 @@ export default function LandingPage() {
       <header
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           scrolled
-            ? 'bg-background/80 backdrop-blur-xl border-b border-border/40'
-            : 'bg-transparent'
+            ? "bg-background/80 backdrop-blur-xl border-b border-border/40"
+            : "bg-transparent"
         }`}
       >
         <nav className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
@@ -158,9 +157,9 @@ export default function LandingPage() {
           </div>
           <div className="hidden md:flex items-center gap-8">
             {[
-              { label: 'Features', href: '#features' },
-              { label: 'Stack', href: '#stack' },
-              { label: 'Dev Experience', href: '#devex' }
+              { label: "Features", href: "#features" },
+              { label: "Stack", href: "#stack" },
+              { label: "Dev Experience", href: "#devex" },
             ].map((link) => (
               <a
                 key={link.label}
@@ -172,13 +171,12 @@ export default function LandingPage() {
             ))}
           </div>
           <div>
-            {/* Update href to your deployed app */}
-            <Link
+            <a
               className="text-sm bg-primary text-primary-foreground px-4 py-2 rounded-lg hover:bg-primary-dark transition-all duration-200 font-semibold"
-              href="/signup"
+              href={appUrl("/signup")}
             >
               Get Started
-            </Link>
+            </a>
           </div>
         </nav>
       </header>
@@ -196,8 +194,8 @@ export default function LandingPage() {
           className="absolute inset-0 opacity-[0.04]"
           style={{
             backgroundImage:
-              'linear-gradient(hsl(var(--foreground)) 1px, transparent 1px), linear-gradient(to right, hsl(var(--foreground)) 1px, transparent 1px)',
-            backgroundSize: '48px 48px'
+              "linear-gradient(hsl(var(--foreground)) 1px, transparent 1px), linear-gradient(to right, hsl(var(--foreground)) 1px, transparent 1px)",
+            backgroundSize: "48px 48px",
           }}
         />
         {/* Content */}
@@ -217,17 +215,16 @@ export default function LandingPage() {
           </h1>
           <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed">
             A full-stack TypeScript monorepo with auth, database, UI components,
-            and tooling — all wired and working. Clone it. Fill{' '}
+            and tooling — all wired and working. Clone it. Fill{" "}
             <code className="text-accent font-mono text-sm bg-accent/10 px-2 py-0.5 rounded border border-accent/20">
               .env
             </code>
             . Build.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            {/* Update href to your GitHub repo or deployed app */}
-            <Link
+            <a
               className="inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground px-8 py-4 rounded-xl text-base font-semibold hover:bg-primary-dark transition-all duration-200 shadow-lg shadow-primary/20"
-              href="/signup"
+              href={appUrl("/signup")}
             >
               Get Started Free
               <svg
@@ -243,7 +240,7 @@ export default function LandingPage() {
                   strokeWidth={2}
                 />
               </svg>
-            </Link>
+            </a>
           </div>
           <div className="flex items-center justify-center gap-6 mt-10 text-sm text-muted-foreground">
             <span className="flex items-center gap-1.5">
@@ -266,13 +263,13 @@ export default function LandingPage() {
         <div className="absolute bottom-0 left-0 right-0 border-t border-border/30 overflow-hidden py-3.5 bg-card/30 backdrop-blur-md">
           <div
             className="flex whitespace-nowrap animate-marquee"
-            style={{ willChange: 'transform' }}
+            style={{ willChange: "transform" }}
           >
             {[
               ...MARQUEE_ITEMS,
               ...MARQUEE_ITEMS,
               ...MARQUEE_ITEMS,
-              ...MARQUEE_ITEMS
+              ...MARQUEE_ITEMS,
             ].map((tech, i) => (
               <span
                 key={i}
@@ -350,17 +347,15 @@ export default function LandingPage() {
                   </div>
                   <div className="pl-5 flex items-center gap-2">
                     <span className="text-primary-foreground/40">📁</span>
-                    <span>
-                      db · ui · logging · shared · typescript-config
-                    </span>
+                    <span>db · ui · logging · shared · typescript-config</span>
                   </div>
                 </div>
               </div>
             </div>
             {/* Small cards */}
             {BENTO_SMALL_CARDS.map((card) => {
-              const Icon = card.icon
-              const cls = ACCENT_CLASSES[card.accent]
+              const Icon = card.icon;
+              const cls = ACCENT_CLASSES[card.accent];
               return (
                 <div
                   key={card.id}
@@ -380,7 +375,7 @@ export default function LandingPage() {
                     {card.description}
                   </p>
                 </div>
-              )
+              );
             })}
           </div>
         </div>
@@ -410,13 +405,13 @@ export default function LandingPage() {
           <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-background to-transparent z-10 pointer-events-none" />
           <div
             className="flex animate-marquee whitespace-nowrap"
-            style={{ willChange: 'transform' }}
+            style={{ willChange: "transform" }}
           >
             {[
               ...STACK_ROW_ONE,
               ...STACK_ROW_ONE,
               ...STACK_ROW_ONE,
-              ...STACK_ROW_ONE
+              ...STACK_ROW_ONE,
             ].map((tech, i) => (
               <div
                 key={`r1-${i}`}
@@ -439,13 +434,13 @@ export default function LandingPage() {
           <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-background to-transparent z-10 pointer-events-none" />
           <div
             className="flex animate-marquee-reverse whitespace-nowrap"
-            style={{ willChange: 'transform' }}
+            style={{ willChange: "transform" }}
           >
             {[
               ...STACK_ROW_TWO,
               ...STACK_ROW_TWO,
               ...STACK_ROW_TWO,
-              ...STACK_ROW_TWO
+              ...STACK_ROW_TWO,
             ].map((tech, i) => (
               <div
                 key={`r2-${i}`}
@@ -485,10 +480,10 @@ export default function LandingPage() {
               </p>
               <ul className="mt-2 space-y-3">
                 {[
-                  'Parallel execution across all apps',
-                  'Intelligent caching — skip unchanged packages',
-                  'Shared ESLint + Prettier + tsconfig presets',
-                  'Commitlint + Husky enforce clean git history'
+                  "Parallel execution across all apps",
+                  "Intelligent caching — skip unchanged packages",
+                  "Shared ESLint + Prettier + tsconfig presets",
+                  "Commitlint + Husky enforce clean git history",
                 ].map((item) => (
                   <li
                     key={item}
@@ -510,31 +505,31 @@ export default function LandingPage() {
                   bun install
                 </TypingAnimation>
                 <AnimatedSpan className="text-muted-foreground">
-                  {' '}
+                  {" "}
                   bun install v1.3.9
                 </AnimatedSpan>
                 <AnimatedSpan className="text-muted-foreground">
-                  {' '}
+                  {" "}
                   Resolving packages from lockfile...
                 </AnimatedSpan>
                 <AnimatedSpan className="text-primary">
-                  {' '}
+                  {" "}
                   ✔ packages/db installed
                 </AnimatedSpan>
                 <AnimatedSpan className="text-primary">
-                  {' '}
+                  {" "}
                   ✔ packages/ui installed
                 </AnimatedSpan>
                 <AnimatedSpan className="text-primary">
-                  {' '}
+                  {" "}
                   ✔ packages/logging installed
                 </AnimatedSpan>
                 <AnimatedSpan className="text-primary">
-                  {' '}
+                  {" "}
                   ✔ apps/web + apps/api installed
                 </AnimatedSpan>
                 <AnimatedSpan className="text-muted-foreground">
-                  {' '}
+                  {" "}
                   847 packages installed [1.24s]
                 </AnimatedSpan>
                 <AnimatedSpan>&nbsp;</AnimatedSpan>
@@ -542,28 +537,28 @@ export default function LandingPage() {
                   bun run dev
                 </TypingAnimation>
                 <AnimatedSpan className="text-muted-foreground">
-                  {' '}
+                  {" "}
                   @tejadev/web:dev ▶ starting on :3000
                 </AnimatedSpan>
                 <AnimatedSpan className="text-muted-foreground">
-                  {' '}
+                  {" "}
                   @tejadev/api:dev ▶ starting on :8000
                 </AnimatedSpan>
                 <AnimatedSpan className="text-primary">
-                  {' '}
+                  {" "}
                   @tejadev/api:dev ✔ connected to MongoDB
                 </AnimatedSpan>
                 <AnimatedSpan className="text-primary">
-                  {' '}
+                  {" "}
                   @tejadev/api:dev ✔ Firebase Admin initialized
                 </AnimatedSpan>
                 <AnimatedSpan className="text-primary">
-                  {' '}
+                  {" "}
                   @tejadev/web:dev ✔ compiled in 1.8s
                 </AnimatedSpan>
                 <AnimatedSpan>&nbsp;</AnimatedSpan>
                 <AnimatedSpan className="text-primary font-semibold">
-                  {' '}
+                  {" "}
                   ✔ Ready on http://localhost:3000
                 </AnimatedSpan>
               </Terminal>
@@ -589,17 +584,16 @@ export default function LandingPage() {
                 Start shipping.
               </h2>
               <p className="text-lg md:text-xl text-primary-foreground/75 max-w-xl mx-auto leading-relaxed mb-10">
-                Clone the repo, fill in your{' '}
+                Clone the repo, fill in your{" "}
                 <code className="text-accent font-mono bg-primary-foreground/10 px-2 py-0.5 rounded text-base">
                   .env
-                </code>{' '}
+                </code>{" "}
                 , and you&apos;re building features on day one — not day five.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                {/* Update href to your GitHub repo */}
-                <Link
+                <a
                   className="inline-flex items-center justify-center gap-2 bg-primary-foreground text-primary px-8 py-4 rounded-xl text-base font-bold hover:opacity-90 transition-all duration-200 shadow-xl"
-                  href="/signup"
+                  href={appUrl("/signup")}
                 >
                   Get Started Free
                   <svg
@@ -615,13 +609,13 @@ export default function LandingPage() {
                       strokeWidth={2.5}
                     />
                   </svg>
-                </Link>
-                <Link
+                </a>
+                <a
                   className="inline-flex items-center justify-center gap-2 border-2 border-primary-foreground/40 text-primary-foreground px-8 py-4 rounded-xl text-base font-semibold hover:bg-primary-foreground/10 transition-all duration-200"
-                  href="/login"
+                  href={appUrl("/login")}
                 >
                   Sign In
-                </Link>
+                </a>
               </div>
               <p className="text-sm text-primary-foreground/50 mt-8">
                 MIT License · No vendor lock-in · Fully yours to extend
@@ -671,12 +665,12 @@ export default function LandingPage() {
               <ul className="space-y-2.5">
                 {FOOTER_AUTH.map((link) => (
                   <li key={link.label}>
-                    <Link
+                    <a
                       className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-200"
                       href={link.href}
                     >
                       {link.label}
-                    </Link>
+                    </a>
                   </li>
                 ))}
               </ul>
@@ -699,5 +693,5 @@ export default function LandingPage() {
         </div>
       </footer>
     </div>
-  )
+  );
 }
